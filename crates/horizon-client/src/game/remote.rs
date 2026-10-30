@@ -3707,11 +3707,12 @@ impl Game<'_> {
         self.gui.atlas.sprites.insert(location, rect);
     }
     /// Whether a downloaded skin or cape is in the atlas to draw, marking it
-    /// drawn; if not (new, or its slot taken), its image is queued for upload
-    /// again and it is drawn from the next frame.
+    /// drawn; if not (new, its slot taken, or the atlas rebuilt by a resource
+    /// reload, which keeps the slots but not their sprites), its image is
+    /// queued for upload again and it is drawn from the next frame.
     fn again_skin(&mut self, location: &str) -> bool {
         let mut downloads = self.skin_downloads.borrow_mut();
-        if self.skin_slots.contains(location) {
+        if self.skin_slots.contains(location) && self.gui.atlas.sprites.contains_key(location) {
             downloads.drawn(location);
             true
         } else {
